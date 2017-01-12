@@ -3,8 +3,8 @@ package bartender.database;
 
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ResourceBundle;
 
-//import com.ibatis.common.jdbc.ScriptRunner;
 
 /**
  * This class knows the database credentials and provides a method to connect to the database. It initializes the JDBC
@@ -19,7 +19,7 @@ public final class Connection {
     private static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
 
     /**
-     * Empty constructor. Use {@link getInstance()} to get the singleton instance.
+     * Empty constructor. Use getInstance() to get the singleton instance.
      */
     private Connection() {
     }
@@ -62,9 +62,11 @@ public final class Connection {
      * Reads database credentials from the property file and stores them in fields.
      */
     private void initializeDatabaseConfiguration() {
-        username = "root";
-        password = "samsa";
-        url = "jdbc:mysql://localhost:3306/bartender";
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("database");
+
+        username = resourceBundle.getString("username");
+        password = resourceBundle.getString("password");
+        url = resourceBundle.getString("url");
     }
 
 }
