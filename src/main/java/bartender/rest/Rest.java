@@ -110,30 +110,35 @@ public class Rest extends AbstractRest {
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("shots/{shotName}/make")
     public Response makeShot(@PathParam("shotName") String shotName, String postBody) {
-        JSONObject postJson = new JSONObject(postBody);
-        if (postJson.has("centiliter")) {
-            int centiliter;
-            try {
-                centiliter = postJson.getInt("centiliter");
-            } catch (JSONException e) {
-                return buildBadRequestResponse("{\"error\":\"Centiliter has to be an integer value.\"}");
-            }
-            if (Arrays.stream(SHOT_SIZES).anyMatch(s -> s == centiliter)) {
-                if(dbShots.getShot(shotName)!=null) {
-                    String spirits_pump = dbSpirits.getPump(shotName);
-                    //TODO: make shot
-                    return buildAcceptedResponse("{\"message\":\"Makes shot with pump "+ spirits_pump + ".\"}");
-                }else{
-                    return buildNotFoundResponse("{\"error\":\"There is no spirit with the Name " + shotName + ".\"}");
-
+        try {
+            JSONObject postJson = new JSONObject(postBody);
+            if (postJson.has("centiliter")) {
+                int centiliter;
+                try {
+                    centiliter = postJson.getInt("centiliter");
+                } catch (JSONException e) {
+                    return buildBadRequestResponse("{\"error\":\"Centiliter has to be an integer value.\"}");
                 }
-            } else {
-                return buildBadRequestResponse("{\"error\":\"Centiliter has to be 1, 2 or 4.\"}");
-            }
-        }
+                if (Arrays.stream(SHOT_SIZES).anyMatch(s -> s == centiliter)) {
+                    if (dbShots.getShot(shotName) != null) {
+                        String spirits_pump = dbSpirits.getPump(shotName);
+                        //TODO: make shot
+                        return buildAcceptedResponse("{\"message\":\"Makes shot with pump " + spirits_pump + ".\"}");
+                    } else {
+                        return buildNotFoundResponse(
+                                "{\"error\":\"There is no spirit with the Name " + shotName + ".\"}");
 
-    return buildBadRequestResponse("{\"error\":\"Centiliter has to be 1, 2 or 4.\"}");
-}
+                    }
+                } else {
+                    return buildBadRequestResponse("{\"error\":\"Centiliter has to be 1, 2 or 4.\"}");
+                }
+            }
+
+            return buildBadRequestResponse("{\"error\":\"Centiliter has to be 1, 2 or 4.\"}");
+        }catch(JSONException e){
+            return buildBadRequestResponse("{\"error\":\"Centiliter has to be specified e.g. {\"centiliter\": 2}\"}");
+        }
+    }
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -164,18 +169,18 @@ public class Rest extends AbstractRest {
         }
     }
 
-private enum DrinkType {
-    SHOT("shot"),
-    COCKTAIL("cocktail");
+    private enum DrinkType {
+        SHOT("shot"),
+        COCKTAIL("cocktail");
 
-    private final String name;
+        private final String name;
 
-    DrinkType(String name) {
-        this.name = name;
+        DrinkType(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
     }
-
-    public String getName() {
-        return name;
-    }
-}
 }
