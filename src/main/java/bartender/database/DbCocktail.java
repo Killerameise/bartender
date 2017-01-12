@@ -11,14 +11,15 @@ public class DbCocktail extends DbObject {
     public List<Map<String, Object>> getCocktails() {
         String sql
                 = "SELECT cocktails.name, cocktails.description FROM cocktails, ingredients, spirits " +
-                  "WHERE cocktail_name = cocktails.name AND spirit_name = spirits.name AND spirits.in_stock = TRUE";
+                  "WHERE cocktail_name = cocktails.name AND spirit_name = spirits.name AND spirits.in_stock = TRUE " +
+                  "GROUP BY cocktails.name";
         return executeStatementReturnsListMapWithMapWithKeys(sql, "name");
     }
 
     public Map<String, Object> getCocktail(String name) {
         String sql = "SELECT cocktails.name, cocktails.description FROM cocktails, ingredients, spirits " +
                      "WHERE cocktail_name = cocktails.name AND spirit_name = spirits.name AND spirits.in_stock = TRUE " +
-                     "AND cocktails.name='" + name +"'";
+                     "AND cocktails.name='" + name + "'";
         return executeStatementReturnsMap(sql);
     }
 }

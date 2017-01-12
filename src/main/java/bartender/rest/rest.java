@@ -24,7 +24,7 @@ import java.util.Objects;
  */
 
 @Path("interface/v1")
-public class rest extends abstractRest {
+public class Rest extends AbstractRest {
     private static final int[]         SHOT_SIZES    = new int[]{1, 2, 4};
     private final        DbSpirits     dbSpirits     = new DbSpirits();
     private final        DbCocktail    dbCocktail    = new DbCocktail();
