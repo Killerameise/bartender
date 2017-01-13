@@ -4,6 +4,7 @@ import bartender.database.DbCocktail;
 import bartender.database.DbIngredients;
 import bartender.database.DbShots;
 import bartender.database.DbSpirits;
+import bartender.utils.Utils;
 import com.google.common.net.UrlEscapers;
 import com.google.gson.Gson;
 import org.json.JSONException;
@@ -14,10 +15,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Created by Jaspar Mang on 10.01.17.
@@ -26,11 +24,13 @@ import java.util.Objects;
 @Path("interface/v1")
 public class Rest extends AbstractRest {
     private static final int[]         SHOT_SIZES    = new int[]{1, 2, 4};
+    private static final String        RANDOM_SHOT   = "Random Shot";
     private final        DbSpirits     dbSpirits     = new DbSpirits();
     private final        DbCocktail    dbCocktail    = new DbCocktail();
     private final        DbShots       dbShots       = new DbShots();
     private final        DbIngredients dbIngredients = new DbIngredients();
     private final        Gson          gson          = new Gson();
+
 
     @GET
     @Path("cocktails")
@@ -46,6 +46,10 @@ public class Rest extends AbstractRest {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getShots(@Context UriInfo uriInfo) {
         List<Map<String, Object>> shots = dbShots.getShots();
+        if (!shots.isEmpty()) {
+            shots.add(new HashMap<>());
+            shots.get(shots.size() - 1).put("name", RANDOM_SHOT);
+        }
         addUrlToListMap(shots, uriInfo, "name", true);
         return buildOkResponse(gson.toJson(shots));
     }
@@ -89,7 +93,11 @@ public class Rest extends AbstractRest {
     private Response getDrink(DrinkType drinkType, String drinkName, UriInfo uriInfo) {
         Map<String, Object> drink = null;
         if (drinkType == DrinkType.SHOT) {
-            drink = dbShots.getShot(drinkName);
+            if (drinkName.equals(RANDOM_SHOT)) {
+                drink = createRandomShotEntry();
+            } else {
+                drink = dbShots.getShot(drinkName);
+            }
         } else if (drinkType == DrinkType.COCKTAIL) {
             drink = dbCocktail.getCocktail(drinkName);
             if (drink != null) {
@@ -120,10 +128,14 @@ public class Rest extends AbstractRest {
                     return buildBadRequestResponse("{\"error\":\"Centiliter has to be an integer value.\"}");
                 }
                 if (Arrays.stream(SHOT_SIZES).anyMatch(s -> s == centiliter)) {
-                    if (dbShots.getShot(shotName) != null) {
+                    if (shotName.equals(RANDOM_SHOT) || (dbShots.getShot(shotName) != null)) {
+                        if (shotName.equals(RANDOM_SHOT)) {
+                            shotName = getRandomShotName();
+                        }
                         String spirits_pump = dbSpirits.getPump(shotName);
                         //TODO: make shot
-                        return buildAcceptedResponse("{\"message\":\"Makes shot with pump " + spirits_pump + ".\"}");
+                        return buildAcceptedResponse(
+                                "{\"message\":\"Makes shot " + shotName + " with pump " + spirits_pump + ".\"}");
                     } else {
                         return buildNotFoundResponse(
                                 "{\"error\":\"There is no spirit with the Name " + shotName + ".\"}");
@@ -133,9 +145,8 @@ public class Rest extends AbstractRest {
                     return buildBadRequestResponse("{\"error\":\"Centiliter has to be 1, 2 or 4.\"}");
                 }
             }
-
             return buildBadRequestResponse("{\"error\":\"Centiliter has to be 1, 2 or 4.\"}");
-        }catch(JSONException e){
+        } catch (JSONException e) {
             return buildBadRequestResponse("{\"error\":\"Centiliter has to be specified e.g. {\"centiliter\": 2}\"}");
         }
     }
@@ -169,6 +180,18 @@ public class Rest extends AbstractRest {
         }
     }
 
+    private Map<String, Object> createRandomShotEntry() {
+        Map<String, Object> randomShotEntry = new HashMap<>();
+        randomShotEntry.put("name", RANDOM_SHOT);
+        randomShotEntry.put("description", "Feel Lucky? Get a random shot.");
+        return randomShotEntry;
+    }
+
+    private String getRandomShotName() {
+        List<Map<String, Object>> shots = dbShots.getShots();
+        return shots.get(Utils.randInt(0, shots.size() - 1)).get("name").toString();
+    }
+
     private enum DrinkType {
         SHOT("shot"),
         COCKTAIL("cocktail");
@@ -183,4 +206,6 @@ public class Rest extends AbstractRest {
             return name;
         }
     }
+
+
 }
