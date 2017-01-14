@@ -1,0 +1,4 @@
+db_username=$username
+db_password=$password
+db_url=jdbc:mysql://localhost:3306/bartender
+on_raspberry_pi=true

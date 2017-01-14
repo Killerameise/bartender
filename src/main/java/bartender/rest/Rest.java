@@ -4,6 +4,7 @@ import bartender.database.DbCocktail;
 import bartender.database.DbIngredients;
 import bartender.database.DbShots;
 import bartender.database.DbSpirits;
+import bartender.gpio.PumpController;
 import bartender.utils.Utils;
 import com.google.common.net.UrlEscapers;
 import com.google.gson.Gson;
@@ -23,13 +24,14 @@ import java.util.*;
 
 @Path("interface/v1")
 public class Rest extends AbstractRest {
-    private static final int[]         SHOT_SIZES    = new int[]{1, 2, 4};
-    private static final String        RANDOM_SHOT   = "Random Shot";
-    private final        DbSpirits     dbSpirits     = new DbSpirits();
-    private final        DbCocktail    dbCocktail    = new DbCocktail();
-    private final        DbShots       dbShots       = new DbShots();
-    private final        DbIngredients dbIngredients = new DbIngredients();
-    private final        Gson          gson          = new Gson();
+    private static final int[]          SHOT_SIZES     = new int[]{1, 2, 4};
+    private static final String         RANDOM_SHOT    = "Random Shot";
+    private final        DbSpirits      dbSpirits      = new DbSpirits();
+    private final        DbCocktail     dbCocktail     = new DbCocktail();
+    private final        DbShots        dbShots        = new DbShots();
+    private final        DbIngredients  dbIngredients  = new DbIngredients();
+    private final        Gson           gson           = new Gson();
+    private final        PumpController pumpController = new PumpController();
 
 
     @GET
@@ -133,7 +135,11 @@ public class Rest extends AbstractRest {
                             shotName = getRandomShotName();
                         }
                         String spirits_pump = dbSpirits.getPump(shotName);
-                        //TODO: make shot
+                        try {
+                            pumpController.makeShot(spirits_pump);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                         return buildAcceptedResponse(
                                 "{\"message\":\"Makes shot " + shotName + " with pump " + spirits_pump + ".\"}");
                     } else {

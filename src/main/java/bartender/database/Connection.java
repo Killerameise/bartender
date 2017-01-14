@@ -1,6 +1,8 @@
 package bartender.database;
 
 
+import bartender.utils.Properties;
+
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
@@ -62,11 +64,11 @@ public final class Connection {
      * Reads database credentials from the property file and stores them in fields.
      */
     private void initializeDatabaseConfiguration() {
-        ResourceBundle resourceBundle = ResourceBundle.getBundle("database");
+        Properties properties = Properties.getInstance();
 
-        username = resourceBundle.getString("username");
-        password = resourceBundle.getString("password");
-        url = resourceBundle.getString("url");
+        username = properties.getDbUsername();
+        password = properties.getDbPassword();
+        url = properties.getDbUrl();
     }
 
 }
