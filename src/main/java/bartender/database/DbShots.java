@@ -18,5 +18,10 @@ public class DbShots extends DbObject{
         return executeStatementReturnsMap(sql);
     }
 
+    public String getImage(String name){
+        String sql = "SELECT image, image_id, image_type FROM spirits WHERE in_stock = true AND name='" + name +"'";
+        return getImageFromDb(sql);
+    }
+
 
 }

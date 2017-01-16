@@ -16,6 +16,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import java.io.File;
 import java.util.*;
 
 /**
@@ -99,6 +100,7 @@ public class Rest extends AbstractRest {
                 drink = createRandomShotEntry();
             } else {
                 drink = dbShots.getShot(drinkName);
+                //String img = dbShots.getImage(drinkName, application);
             }
         } else if (drinkType == DrinkType.COCKTAIL) {
             drink = dbCocktail.getCocktail(drinkName);
@@ -114,6 +116,22 @@ public class Rest extends AbstractRest {
         return buildNotFoundResponse(
                 "{\"error\":\"There is no " + drinkType.getName() + " with the Name " + drinkName + ".\"}");
 
+    }
+
+    @GET
+    @Path("/images/shots/{shotName}")
+    @Produces({"image/png", "image/jpeg", "image/gif"})
+    public Response downloadImage(@PathParam("shotName") String shotName) {
+        String filePath = dbShots.getImage(shotName);
+        File file;
+        if (filePath.equals("")) {
+            ClassLoader classLoader = getClass().getClassLoader();
+            file = new File(classLoader.getResource("imgnotfound.jpg").getFile());
+        } else {
+            file = new File(filePath);
+        }
+        Response.ResponseBuilder response = Response.ok(file);
+        return response.build();
     }
 
     @POST

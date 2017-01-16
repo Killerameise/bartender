@@ -1,26 +1,28 @@
 package bartender.gpio;
 
+import bartender.database.DbPump;
 import bartender.utils.Properties;
-import com.pi4j.io.gpio.GpioController;
-import com.pi4j.io.gpio.GpioFactory;
-import com.pi4j.io.gpio.GpioPinDigitalOutput;
-import com.pi4j.io.gpio.PinState;
-import com.pi4j.io.gpio.RaspiPin;
+import com.pi4j.io.gpio.*;
 
 /**
  * Created by Jaspar Mang on 14.01.17.
  */
 public class PumpController {
+    DbPump dbPump = new DbPump();
+
     public void makeShot(String pump) throws InterruptedException {
         Properties properties = Properties.getInstance();
         if (properties.getOnRaspberryPi()) {
-            System.out.println("<--Pi4J--> GPIO Control Example ... started.");
+            System.out.println("<--Pi4J--> Pump Control ... started.");
 
             // create gpio controller
             final GpioController gpio = GpioFactory.getInstance();
 
+
             // provision gpio pin #01 as an output pin and turn on
-            final GpioPinDigitalOutput pin = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_01, "MyLED", PinState.HIGH);
+
+            final GpioPinDigitalOutput pin = gpio.provisionDigitalOutputPin(
+                    RaspiPin.getPinByAddress(dbPump.getPin1ForPump(pump)), "MyLED", PinState.HIGH);
 
             // set shutdown state for this pin
             pin.setShutdownOptions(true, PinState.LOW);
@@ -31,32 +33,11 @@ public class PumpController {
 
             // turn off gpio pin #01
             pin.low();
-            System.out.println("--> GPIO state should be: OFF");
-
-            Thread.sleep(5000);
-
-            // toggle the current state of gpio pin #01 (should turn on)
-            pin.toggle();
-            System.out.println("--> GPIO state should be: ON");
-
-            Thread.sleep(5000);
-
-            // toggle the current state of gpio pin #01  (should turn off)
-            pin.toggle();
-            System.out.println("--> GPIO state should be: OFF");
-
-            Thread.sleep(5000);
-
-            // turn on gpio pin #01 for 1 second and then off
-            System.out.println("--> GPIO state should be: ON for only 1 second");
-            pin.pulse(1000, true); // set second argument to 'true' use a blocking call
-
-            // stop all GPIO activity/threads by shutting down the GPIO controller
-            // (this method will forcefully shutdown all GPIO monitoring threads and scheduled tasks)
             gpio.shutdown();
+            gpio.unprovisionPin(pin);
 
-            System.out.println("Exiting ControlGpioExample");
-        }else{
+            System.out.println("--> GPIO state should be: OFF");
+        } else {
             System.err.println("Running not on raspberry pi");
             System.out.println("Selected Pump: " + pump);
         }

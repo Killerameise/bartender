@@ -1,5 +1,9 @@
 package bartender.database;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -693,7 +697,7 @@ public abstract class DbObject {
             while (results.next()) {
                 keysValues.add(new HashMap<>());
                 for (String key : keys) {
-                    keysValues.get(keysValues.size()-1).put(
+                    keysValues.get(keysValues.size() - 1).put(
                             key, results.getObject(key));
                 }
             }
@@ -757,7 +761,7 @@ public abstract class DbObject {
     /**
      * Creates a Map for the SQL-Result.
      *
-     * @param sql  The SQl query to be executed.
+     * @param sql The SQl query to be executed.
      *
      * @return A Map of the results.
      */
@@ -826,5 +830,66 @@ public abstract class DbObject {
             }
         }
         return null;
+    }
+
+    public String getImageFromDb(String sql) {
+        java.sql.Connection conn = Connection.getInstance().connect();
+        Statement stmt = null;
+        ResultSet rs;
+        String results = "";
+        FileOutputStream fos = null;
+        if (conn == null) {
+            return results;
+        }
+        try {
+            //Execute a query
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery(sql);
+            if (rs.next()) {
+                byte[] imgData = rs.getBytes("image");
+                if(imgData == null){
+                    return "";
+                }
+                String imgType = rs.getString("image_type");
+                int imgId = rs.getInt("image_id");
+                String tempDir = System.getProperty("java.io.tmpdir");
+                System.out.println(tempDir);
+                results = tempDir + "/" + imgId + "." + imgType;
+                File imgFile = new File(results);
+                imgFile.createNewFile();
+                fos = new FileOutputStream(imgFile);
+                fos.write(imgData);
+            }
+            //Clean-up environment
+            rs.close();
+        } catch (SQLException se) {
+            //Handle errors for JDBC
+            System.err.println(se);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            //finally block used to close resources
+
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (fos != null) {
+                    fos.close();
+                }
+            } catch (SQLException se2) {
+                System.err.println(se2);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                conn.close();
+            } catch (SQLException se) {
+                System.err.println(se);
+            }
+        }
+        return results;
     }
 }
