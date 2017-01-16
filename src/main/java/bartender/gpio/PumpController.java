@@ -40,6 +40,7 @@ public class PumpController {
         } else {
             System.err.println("Running not on raspberry pi");
             System.out.println("Selected Pump: " + pump);
+            Thread.sleep(2500);
         }
     }
 }

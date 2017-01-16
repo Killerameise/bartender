@@ -100,7 +100,6 @@ public class Rest extends AbstractRest {
                 drink = createRandomShotEntry();
             } else {
                 drink = dbShots.getShot(drinkName);
-                //String img = dbShots.getImage(drinkName, application);
             }
         } else if (drinkType == DrinkType.COCKTAIL) {
             drink = dbCocktail.getCocktail(drinkName);
