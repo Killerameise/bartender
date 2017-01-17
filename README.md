@@ -1,4 +1,4 @@
-# bartender
+# Bartender
 
 Bartender with Raspberry Pi.
 
