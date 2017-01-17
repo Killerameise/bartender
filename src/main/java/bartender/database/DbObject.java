@@ -851,10 +851,10 @@ public abstract class DbObject {
                     return "";
                 }
                 String imgType = rs.getString("image_type");
-                int imgId = rs.getInt("image_id");
+                String imgName = rs.getString("name");
                 String tempDir = System.getProperty("java.io.tmpdir");
                 System.out.println(tempDir);
-                results = tempDir + "/" + imgId + "." + imgType;
+                results = tempDir + "/" + imgName + "." + imgType;
                 File imgFile = new File(results);
                 imgFile.createNewFile();
                 fos = new FileOutputStream(imgFile);

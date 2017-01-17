@@ -72,7 +72,7 @@ public class Rest extends AbstractRest {
     public Response getSpirit(@Context UriInfo uriInfo, @PathParam("spiritName") String spiritName) {
         Map<String, Object> spirit = dbSpirits.getSpirit(spiritName);
         if (spirit != null) {
-            addUrlToMap(spirit, uriInfo, "toggle_in_stock", false);
+            addAttributeToMap("link", spirit, uriInfo, "toggle_in_stock", false);
             return buildOkResponse(gson.toJson(spirit));
         }
         return buildNotFoundResponse("{\"error\":\"There is no spirit with the Name " + spiritName + ".\"}");
@@ -109,7 +109,8 @@ public class Rest extends AbstractRest {
             }
         }
         if (drink != null) {
-            addUrlToMap(drink, uriInfo, "make", false);
+            addAttributeToMap("link", drink, uriInfo, "make", false);
+            addAttributeToMap("image", drink, uriInfo, "image", false);
             return buildOkResponse(gson.toJson(drink));
         }
         return buildNotFoundResponse(
@@ -118,10 +119,22 @@ public class Rest extends AbstractRest {
     }
 
     @GET
-    @Path("/images/shots/{shotName}")
+    @Path("/shots/{shotName}/image")
     @Produces({"image/png", "image/jpeg", "image/gif"})
-    public Response downloadImage(@PathParam("shotName") String shotName) {
+    public Response getShotImage(@PathParam("shotName") String shotName) {
         String filePath = dbShots.getImage(shotName);
+        return getImage(filePath);
+    }
+
+    @GET
+    @Path("/cocktails/{cocktailName}/image")
+    @Produces({"image/png", "image/jpeg", "image/gif"})
+    public Response getCocktailImage(@PathParam("cocktailName") String cocktailName) {
+        String filePath = dbCocktail.getImage(cocktailName);
+        return getImage(filePath);
+    }
+
+    private Response getImage(String filePath){
         File file;
         if (filePath.equals("")) {
             ClassLoader classLoader = getClass().getClassLoader();
@@ -188,18 +201,18 @@ public class Rest extends AbstractRest {
     }
 
     private void addUrlToListMap(List<Map<String, Object>> dbEntries, UriInfo uriInfo, String key, boolean dynamic) {
-        dbEntries.stream().forEach(dbEntry -> addUrlToMap(dbEntry, uriInfo, key, dynamic));
+        dbEntries.stream().forEach(dbEntry -> addAttributeToMap("link", dbEntry, uriInfo, key, dynamic));
     }
 
-    private void addUrlToMap(Map<String, Object> dbEntry, UriInfo uriInfo, String key, boolean dynamic) {
+    private void addAttributeToMap(String attribute, Map<String, Object> dbEntry, UriInfo uriInfo, String key, boolean dynamic) {
         String uri = uriInfo.getAbsolutePath().toString();
         if (!Objects.equals(uri.substring(uri.length() - 1), "/")) {
             uri = uri + "/";
         }
         if (dynamic) {
-            dbEntry.put("link", uri + UrlEscapers.urlFragmentEscaper().escape(dbEntry.get(key).toString()));
+            dbEntry.put(attribute, uri + UrlEscapers.urlFragmentEscaper().escape(dbEntry.get(key).toString()));
         } else {
-            dbEntry.put("link", uri + UrlEscapers.urlFragmentEscaper().escape(key));
+            dbEntry.put(attribute, uri + UrlEscapers.urlFragmentEscaper().escape(key));
         }
     }
 

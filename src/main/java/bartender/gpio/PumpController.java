@@ -10,7 +10,7 @@ import com.pi4j.io.gpio.*;
 public class PumpController {
     DbPump dbPump = new DbPump();
 
-    public void makeShot(String pump) throws InterruptedException {
+    public boolean makeShot(String pump) throws InterruptedException {
         Properties properties = Properties.getInstance();
         if (properties.getOnRaspberryPi()) {
             System.out.println("<--Pi4J--> Pump Control ... started.");
@@ -37,10 +37,12 @@ public class PumpController {
             gpio.unprovisionPin(pin);
 
             System.out.println("--> GPIO state should be: OFF");
+            return true;
         } else {
             System.err.println("Running not on raspberry pi");
             System.out.println("Selected Pump: " + pump);
             Thread.sleep(2500);
+            return true;
         }
     }
 }

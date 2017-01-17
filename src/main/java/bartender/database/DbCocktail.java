@@ -22,4 +22,9 @@ public class DbCocktail extends DbObject {
                      "AND cocktails.name='" + name + "'";
         return executeStatementReturnsMap(sql);
     }
+
+    public String getImage(String name){
+        String sql = "SELECT image, name, image_type FROM cocktails WHERE name='" + name +"'";
+        return getImageFromDb(sql);
+    }
 }
