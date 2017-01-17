@@ -35,6 +35,13 @@ public class Rest extends AbstractRest {
     private final        PumpController pumpController = new PumpController();
 
 
+    /**
+     * Returns a list of all cocktails.
+     *
+     * @param uriInfo The URI info of the get call.
+     *
+     * @return a List of all cocktails.
+     */
     @GET
     @Path("cocktails")
     @Produces(MediaType.APPLICATION_JSON)
@@ -44,6 +51,13 @@ public class Rest extends AbstractRest {
         return buildOkResponse(gson.toJson(cocktails));
     }
 
+    /**
+     * Returns a list of all shots.
+     *
+     * @param uriInfo The URI info of the get call.
+     *
+     * @return a List of all shots.
+     */
     @GET
     @Path("shots")
     @Produces(MediaType.APPLICATION_JSON)
@@ -57,6 +71,13 @@ public class Rest extends AbstractRest {
         return buildOkResponse(gson.toJson(shots));
     }
 
+    /**
+     * Returns a list of all spirits.
+     *
+     * @param uriInfo The URI info of the get call.
+     *
+     * @return a List of all spirits.
+     */
     @GET
     @Path("spirits")
     @Produces(MediaType.APPLICATION_JSON)
@@ -134,7 +155,7 @@ public class Rest extends AbstractRest {
         return getImage(filePath);
     }
 
-    private Response getImage(String filePath){
+    private Response getImage(String filePath) {
         File file;
         if (filePath.equals("")) {
             ClassLoader classLoader = getClass().getClassLoader();
@@ -165,13 +186,18 @@ public class Rest extends AbstractRest {
                             shotName = getRandomShotName();
                         }
                         String spirits_pump = dbSpirits.getPump(shotName);
+                        boolean successful = false;
                         try {
-                            pumpController.makeShot(spirits_pump);
+                            successful = pumpController.makeShot(spirits_pump);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
-                        return buildAcceptedResponse(
-                                "{\"message\":\"Makes shot " + shotName + " with pump " + spirits_pump + ".\"}");
+                        if (successful) {
+                            return buildAcceptedResponse(
+                                    "{\"message\":\"Makes shot " + shotName + " with pump " + spirits_pump + ".\"}");
+                        } else {
+                            return buildConflictResponse("{\"message\":\"The system is making a other drink.\"}");
+                        }
                     } else {
                         return buildNotFoundResponse(
                                 "{\"error\":\"There is no spirit with the Name " + shotName + ".\"}");
@@ -204,7 +230,8 @@ public class Rest extends AbstractRest {
         dbEntries.stream().forEach(dbEntry -> addAttributeToMap("link", dbEntry, uriInfo, key, dynamic));
     }
 
-    private void addAttributeToMap(String attribute, Map<String, Object> dbEntry, UriInfo uriInfo, String key, boolean dynamic) {
+    private void addAttributeToMap(String attribute, Map<String, Object> dbEntry, UriInfo uriInfo, String key,
+                                   boolean dynamic) {
         String uri = uriInfo.getAbsolutePath().toString();
         if (!Objects.equals(uri.substring(uri.length() - 1), "/")) {
             uri = uri + "/";

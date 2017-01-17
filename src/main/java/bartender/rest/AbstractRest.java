@@ -34,4 +34,10 @@ public class AbstractRest {
                 .entity(Msg)
                 .build();
     }
+    public Response buildConflictResponse(String Msg){
+        return Response.status(Response.Status.CONFLICT)
+                .type(MediaType.APPLICATION_JSON)
+                .entity(Msg)
+                .build();
+    }
 }
