@@ -1,0 +1,9 @@
+h1 {
+  text-align: center;
+}
+
+#shot-detail-img {
+  min-height: 200px;
+  background-color: grey;
+}
+

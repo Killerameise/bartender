@@ -1,0 +1,10 @@
+<h1>Shots.</h1>
+<div *ngIf="shotsInfoList">
+  <div class="list-group">
+    <button *ngFor="let shotInfo of shotsInfoList" type="button" [class.active]="selected == shotInfo" class="list-group-item list-group-item-action" (click)="onShotSelected(shotInfo)">{{shotInfo.name}}
+    </button>
+  </div>
+</div>
+<div *ngIf="!shotsInfoList">
+  <h2>Seems like theres no shots here.</h2>
+</div>

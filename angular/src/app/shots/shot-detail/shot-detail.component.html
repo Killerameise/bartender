@@ -1,0 +1,16 @@
+<h1>Details.</h1>
+<div *ngIf="shot" class="card">
+  <img id="shot-detail-img" class="card-img-top" src="{{shot.image}}" alt="shot-image">
+  <div class="card-block">
+    <h2 class="card-title">{{ shot.name }}.</h2>
+    <p class="card-text">{{ shot.description }}<p>
+    <div class="btn-group" role="group">
+      <button class="btn btn-secondary" (click)="orderShot(1)">1 cl</button>
+      <button class="btn btn-secondary" (click)="orderShot(2)">2 cl</button>
+      <button class="btn btn-secondary" (click)="orderShot(4)">4 cl</button>
+    </div>
+  </div>
+</div>
+<div *ngIf="!shot">
+  <h1>Choose a shot.</h1>
+</div>

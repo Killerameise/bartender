@@ -1,0 +1,10 @@
+<div *ngIf="message" id="shots-alert-success" class="alert alert-success">
+  {{ message.message }}
+</div>
+<div *ngIf="errorMessage" id="shots-alert-failure" class="alert alert-danger">
+  {{ errorMessage }}
+</div>
+<div class="row">
+  <app-shot-list [shotsInfoList]="shotsInfoList" (selectedShotLink)="onShotSelected($event)" class="col"></app-shot-list>
+  <app-shot-detail [shot]="selectedShot" (shotOrder)="onShotOrder($event)" class="col"></app-shot-detail>
+</div>
