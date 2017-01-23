@@ -6,6 +6,13 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>war</packaging>
     <name>${project.artifactId}</name>
+    <repositories>
+        <repository>
+            <id>sonatype</id>
+            <url>https://oss.sonatype.org/content/groups/public/</url>
+            <name>Sonatype OSSRH</name>
+        </repository>
+    </repositories>
     <build>
         <finalName>${project.artifactId}</finalName>
         <plugins>
@@ -141,5 +148,11 @@
             <artifactId>guava</artifactId>
             <version>18.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.philips.lighting</groupId>
+            <artifactId>huelocalsdk</artifactId>
+            <version>1.8.3-SNAPSHOT</version>
+        </dependency>
+
     </dependencies>
 </project>
