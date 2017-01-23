@@ -2,21 +2,23 @@ package bartender.hue;
 
 
 import com.philips.lighting.hue.sdk.*;
-import com.philips.lighting.model.PHBridge;
-import com.philips.lighting.model.PHBridgeResourcesCache;
-import com.philips.lighting.model.PHLight;
-import com.philips.lighting.model.PHLightState;
+import com.philips.lighting.model.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by Jaspar Mang on 19.01.17.
  */
 public class Bridge {
-    private PHHueSDK phHueSDK;
+    private static final String LIVING_ROOM_KEY = "Wohnzimmer";
+    private final PHHueSDK phHueSDK;
+    List<PHLight> lights;
+    List<PHLightState> lightStates;
 
-    public static void main(String args[]) {
+    public static void main(String args[]) throws InterruptedException {
         Bridge bridge = new Bridge();
+        bridge.sayHello();
     }
 
     public Bridge() {
@@ -28,22 +30,82 @@ public class Bridge {
         phHueSDK.getNotificationManager().registerSDKListener(listener);
         PHBridgeSearchManager sm = (PHBridgeSearchManager) phHueSDK.getSDKService(PHHueSDK.SEARCH_BRIDGE);
         sm.search(true, true);
+        connectToKnownBridge();
+
+
+    }
+
+    public void changeColor(int hue, int duration) throws InterruptedException {
+        PHBridge phBridge = phHueSDK.getSelectedBridge();
+        if (phBridge != null) {
+            saveLastKnownLightConfiguration();
+            PHLightState lightState = new PHLightState();
+            lightState.setHue(hue);
+            phBridge.setLightStateForGroup(LIVING_ROOM_KEY, lightState);
+            Thread.sleep(duration);
+            recoverKnownLightConfiguration();
+        }
+    }
+
+    public void sayHello() throws InterruptedException {
+        PHBridge phBridge = phHueSDK.getSelectedBridge();
+        int i = 0;
+        while (phBridge == null && i < 21) {
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            phBridge = phHueSDK.getSelectedBridge();
+            i++;
+        }
+        if (phBridge != null) {
+            saveLastKnownLightConfiguration();
+
+            PHLightState lightState = new PHLightState();
+            lightState.setBrightness(254);
+            lightState.setOn(true);
+            lightState.setHue(46920);
+            lightState.setSaturation(200);
+
+            lightState.setAlertMode(PHLight.PHLightAlertMode.ALERT_LSELECT);
+            phHueSDK.getSelectedBridge().setLightStateForGroup(LIVING_ROOM_KEY, lightState);
+            Thread.sleep(2500);
+            //lightState.setAlertMode(PHLight.PHLightAlertMode.ALERT_NONE);
+            lightState.setHue(25500);
+            phHueSDK.getSelectedBridge().setLightStateForGroup(LIVING_ROOM_KEY, lightState);
+            //Thread.sleep(500);
+            //lightState.setAlertMode(PHLight.PHLightAlertMode.ALERT_LSELECT);
+            phHueSDK.getSelectedBridge().setLightStateForGroup(LIVING_ROOM_KEY, lightState);
+            Thread.sleep(2500);
+            lightState.setAlertMode(PHLight.PHLightAlertMode.ALERT_NONE);
+            phHueSDK.getSelectedBridge().setLightStateForGroup(LIVING_ROOM_KEY, lightState);
+
+            recoverKnownLightConfiguration();
+        }
+    }
+
+    private void saveLastKnownLightConfiguration(){
+        PHBridgeResourcesCache cache = phHueSDK.getSelectedBridge().getResourceCache();
+        lights = cache.getAllLights();
+        lightStates = new ArrayList<>();
+        lights.stream().forEach(l -> lightStates.add(l.getLastKnownLightState()));
+    }
+
+    private void recoverKnownLightConfiguration(){
+        if(lights!=null && lightStates!=null && lights.size()==lightStates.size()) {
+            for (int j = 0; j < lights.size(); j++) {
+                lightStates.get(j).setAlertMode(PHLight.PHLightAlertMode.ALERT_NONE);
+                phHueSDK.getSelectedBridge().updateLightState(lights.get(j), lightStates.get(j));
+            }
+        }
+    }
+
+    private void connectToKnownBridge() {
         PHAccessPoint accessPoint = new PHAccessPoint();
         accessPoint.setIpAddress("192.168.1.243");
         accessPoint.setUsername("8jo1xOi22axE9nAr1ExnmYlrkzdFpaHupaF2Te7m");
         phHueSDK.connect(accessPoint);
-
-        System.out.println("lets have fun");
-        PHBridge phBridge = phHueSDK.getSelectedBridge();
-        PHBridgeResourcesCache cache = phBridge.getResourceCache();
-        List<PHLight> lights = cache.getAllLights();
-        PHLightState lightState = new PHLightState();
-        lightState.setHue(145);
-        lights.stream().forEach(l -> {
-            phBridge.updateLightState(l, lightState);
-            System.out.println("changed");
-        });
-
     }
 
     private PHSDKListener listener = new PHSDKListener() {
