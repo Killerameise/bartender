@@ -5,6 +5,7 @@ import bartender.database.DbIngredients;
 import bartender.database.DbShots;
 import bartender.database.DbSpirits;
 import bartender.gpio.PumpController;
+import bartender.hue.Bridge;
 import bartender.utils.Utils;
 import com.google.common.net.UrlEscapers;
 import com.google.gson.Gson;
@@ -33,6 +34,7 @@ public class Rest extends AbstractRest {
     private final        DbIngredients  dbIngredients  = new DbIngredients();
     private final        Gson           gson           = new Gson();
     private final        PumpController pumpController = new PumpController();
+    private static final Bridge         bridge         = Bridge.getInstance();
 
 
     /**
@@ -143,16 +145,24 @@ public class Rest extends AbstractRest {
     @Path("/shots/{shotName}/image")
     @Produces({"image/png", "image/jpeg", "image/gif"})
     public Response getShotImage(@PathParam("shotName") String shotName) {
-        String filePath = dbShots.getImage(shotName);
-        return getImage(filePath);
+        if(shotName.equals("Random")){
+            return getImage(shotName);
+        }else {
+            String filePath = dbShots.getImage(shotName);
+            return getImage(filePath);
+        }
     }
 
     @GET
     @Path("/cocktails/{cocktailName}/image")
     @Produces({"image/png", "image/jpeg", "image/gif"})
     public Response getCocktailImage(@PathParam("cocktailName") String cocktailName) {
-        String filePath = dbCocktail.getImage(cocktailName);
-        return getImage(filePath);
+        if(cocktailName.equals("Random")){
+            return getImage(cocktailName);
+        }else {
+            String filePath = dbCocktail.getImage(cocktailName);
+            return getImage(filePath);
+        }
     }
 
     private Response getImage(String filePath) {
@@ -160,7 +170,10 @@ public class Rest extends AbstractRest {
         if (filePath.equals("")) {
             ClassLoader classLoader = getClass().getClassLoader();
             file = new File(classLoader.getResource("imgnotfound.jpg").getFile());
-        } else {
+        } else if (filePath.equals("Random")){
+            ClassLoader classLoader = getClass().getClassLoader();
+            file = new File(classLoader.getResource("random.jpg").getFile());
+        }else{
             file = new File(filePath);
         }
         Response.ResponseBuilder response = Response.ok(file);
@@ -188,7 +201,7 @@ public class Rest extends AbstractRest {
                         String spirits_pump = dbSpirits.getPump(shotName);
                         boolean successful = false;
                         try {
-                            successful = pumpController.makeShot(spirits_pump);
+                            successful = pumpController.makeShot(shotName, spirits_pump, centiliter, true);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
@@ -246,7 +259,7 @@ public class Rest extends AbstractRest {
     private Map<String, Object> createRandomShotEntry() {
         Map<String, Object> randomShotEntry = new HashMap<>();
         randomShotEntry.put("name", RANDOM_SHOT);
-        randomShotEntry.put("description", "Feel Lucky? Get a random shot.");
+        randomShotEntry.put("description", "Feeling Lucky? Get a random shot.");
         return randomShotEntry;
     }
 
@@ -270,5 +283,50 @@ public class Rest extends AbstractRest {
         }
     }
 
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("test/{shotName}")
+    public Response testShot(@PathParam("shotName") String shotName, String postBody) {
+        try {
+            JSONObject postJson = new JSONObject(postBody);
+            if (postJson.has("millis")) {
+                int millis;
+                try {
+                    millis = postJson.getInt("millis");
+                } catch (JSONException e) {
+                    return buildBadRequestResponse("{\"error\":\"Millis has to be an integer value.\"}");
+                }
+
+                if (shotName.equals(RANDOM_SHOT) || (dbShots.getShot(shotName) != null)) {
+                    if (shotName.equals(RANDOM_SHOT)) {
+                        shotName = getRandomShotName();
+                    }
+                    String spirits_pump = dbSpirits.getPump(shotName);
+                    boolean successful = false;
+                    try {
+                        successful = pumpController.makeShot(shotName, spirits_pump, millis, false);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    if (successful) {
+                        return buildAcceptedResponse(
+                                "{\"message\":\"Makes shot " + shotName + " with pump " + spirits_pump + ".\"}");
+                    } else {
+                        return buildConflictResponse("{\"message\":\"The system is making a other drink.\"}");
+                    }
+                } else {
+                    return buildNotFoundResponse(
+                            "{\"error\":\"There is no spirit with the Name " + shotName + ".\"}");
+
+                }
+            } else {
+                return buildBadRequestResponse("{\"error\":\"Centiliter has to be 1, 2 or 4.\"}");
+            }
+
+        } catch (JSONException e) {
+            return buildBadRequestResponse("{\"error\":\"Centiliter has to be specified e.g. {\"centiliter\": 2}\"}");
+        }
+    }
 
 }
