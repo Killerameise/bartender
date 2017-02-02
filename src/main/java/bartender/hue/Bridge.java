@@ -150,7 +150,7 @@ public class Bridge {
         @Override
         public void onBridgeConnected(PHBridge b, String username) {
             phHueSDK.setSelectedBridge(b);
-            phHueSDK.enableHeartbeat(b, PHHueSDK.HB_INTERVAL);
+            phHueSDK.enableHeartbeat(b, 2500);
             System.out.println("Username: " + username);
             System.out.println("connected via search");
             // Here it is recommended to set your connected bridge in your sdk object (as above) and start the heartbeat.

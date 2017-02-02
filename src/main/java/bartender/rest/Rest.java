@@ -145,8 +145,8 @@ public class Rest extends AbstractRest {
     @Path("/shots/{shotName}/image")
     @Produces({"image/png", "image/jpeg", "image/gif"})
     public Response getShotImage(@PathParam("shotName") String shotName) {
-        if(shotName.equals("Random")){
-            return getImage(shotName);
+        if(shotName.equals(RANDOM_SHOT)){
+            return getImage(RANDOM_SHOT);
         }else {
             String filePath = dbShots.getImage(shotName);
             return getImage(filePath);
@@ -158,7 +158,7 @@ public class Rest extends AbstractRest {
     @Produces({"image/png", "image/jpeg", "image/gif"})
     public Response getCocktailImage(@PathParam("cocktailName") String cocktailName) {
         if(cocktailName.equals("Random")){
-            return getImage(cocktailName);
+            return getImage("Random");
         }else {
             String filePath = dbCocktail.getImage(cocktailName);
             return getImage(filePath);
@@ -170,7 +170,7 @@ public class Rest extends AbstractRest {
         if (filePath.equals("")) {
             ClassLoader classLoader = getClass().getClassLoader();
             file = new File(classLoader.getResource("imgnotfound.jpg").getFile());
-        } else if (filePath.equals("Random")){
+        } else if (filePath.equals(RANDOM_SHOT)){
             ClassLoader classLoader = getClass().getClassLoader();
             file = new File(classLoader.getResource("random.jpg").getFile());
         }else{
