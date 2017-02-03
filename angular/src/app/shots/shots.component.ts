@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Shot } from '../shot';
 import { ShotInfo } from '../shot-info';
 import { BartenderService } from '../bartender.service';
+import { Observable } from 'rxjs/Rx';
 
 @Component({
   selector: 'app-shots',
@@ -36,8 +37,16 @@ export class ShotsComponent implements OnInit {
     this.bartenderService.makeShot(event.shot.link, event.quantity).subscribe(
       message => this.message = message,
       error => this.errorMessage = error
-    );
+    )
     console.log(this.message);
+    setTimeout(() => {
+      this.clearMessages();
+    }, 3000);
+  }
+
+  clearMessages() {
+    this.errorMessage = "";
+    this.message = "";
   }
 
 }

@@ -1,8 +1,8 @@
 <div *ngIf="message" id="shots-alert-success" class="alert alert-success">
-  {{ message.message }}
+  Bla
 </div>
 <div *ngIf="errorMessage" id="shots-alert-failure" class="alert alert-danger">
-  {{ errorMessage }}
+  {{ message }}
 </div>
 <div class="row">
   <app-shot-list [shotsInfoList]="shotsInfoList" (selectedShotLink)="onShotSelected($event)" class="col"></app-shot-list>
