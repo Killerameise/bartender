@@ -15,7 +15,7 @@ import javax.ws.rs.core.Response;
  */
 @Path("interface/v1/hue")
 public class HueRest extends AbstractRest {
-    private static final Bridge bridge = new Bridge();
+    public static final Bridge bridge = Bridge.getInstance();
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -30,7 +30,10 @@ public class HueRest extends AbstractRest {
                     hue = postJson.getInt("hue");
                     duration = postJson.getInt("duration");
                     try {
-                        bridge.changeColor(hue, duration);
+                        bridge.saveLastKnownLightConfiguration();
+                        bridge.changeColor(hue, 255);
+                        Thread.sleep(duration);
+                        bridge.recoverKnownLightConfiguration();
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
