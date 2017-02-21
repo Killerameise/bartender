@@ -38,10 +38,9 @@ export class ShotsComponent implements OnInit {
       message => this.message = message,
       error => this.errorMessage = error
     )
-    console.log(this.message);
     setTimeout(() => {
       this.clearMessages();
-    }, 3000);
+    }, 5000);
   }
 
   clearMessages() {

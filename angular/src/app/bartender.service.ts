@@ -26,7 +26,4 @@ export class BartenderService {
     let options = new RequestOptions({ headers: headers });
     return this.http.post(shotMakeUrl, body, options).map((res: Response) => res.json());
   }
-
-
-
-}
+};
