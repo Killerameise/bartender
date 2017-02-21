@@ -1,9 +1,11 @@
 package bartender.hue;
 
 
-import bartender.database.Connection;
 import com.philips.lighting.hue.sdk.*;
-import com.philips.lighting.model.*;
+import com.philips.lighting.model.PHBridge;
+import com.philips.lighting.model.PHBridgeResourcesCache;
+import com.philips.lighting.model.PHLight;
+import com.philips.lighting.model.PHLightState;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,9 +15,9 @@ import java.util.List;
  */
 public class Bridge {
     private static final String LIVING_ROOM_KEY = "Wohnzimmer";
-    private static Bridge instance = null;
-    private final PHHueSDK phHueSDK;
-    private List<PHLight> lights;
+    private static       Bridge instance        = null;
+    private PHHueSDK           phHueSDK;
+    private List<PHLight>      lights;
     private List<PHLightState> lightStates;
 
     public static void main(String args[]) throws InterruptedException {
@@ -35,21 +37,22 @@ public class Bridge {
     }
 
     private Bridge() {
+        bartender.utils.Properties properties = bartender.utils.Properties.getInstance();
+        if (properties.getOnRaspberryPi()) {
+            phHueSDK = PHHueSDK.create();
+            phHueSDK.setAppName("test");
 
-        phHueSDK = PHHueSDK.create();
-        phHueSDK.setAppName("test");
 
-
-        phHueSDK.getNotificationManager().registerSDKListener(listener);
-        PHBridgeSearchManager sm = (PHBridgeSearchManager) phHueSDK.getSDKService(PHHueSDK.SEARCH_BRIDGE);
-        sm.search(true, true);
-        connectToKnownBridge();
-        try {
-            sayHello();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            phHueSDK.getNotificationManager().registerSDKListener(listener);
+            PHBridgeSearchManager sm = (PHBridgeSearchManager) phHueSDK.getSDKService(PHHueSDK.SEARCH_BRIDGE);
+            sm.search(true, true);
+            connectToKnownBridge();
+            try {
+                sayHello();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
-
     }
 
     public void changeColor(int hue, int saturation) throws InterruptedException {
@@ -103,15 +106,15 @@ public class Bridge {
         }
     }
 
-    public void saveLastKnownLightConfiguration(){
+    public void saveLastKnownLightConfiguration() {
         PHBridgeResourcesCache cache = phHueSDK.getSelectedBridge().getResourceCache();
         lights = cache.getAllLights();
         lightStates = new ArrayList<>();
         lights.stream().forEach(l -> lightStates.add(l.getLastKnownLightState()));
     }
 
-    public void recoverKnownLightConfiguration(){
-        if(lights!=null && lightStates!=null && lights.size()==lightStates.size()) {
+    public void recoverKnownLightConfiguration() {
+        if (lights != null && lightStates != null && lights.size() == lightStates.size()) {
             for (int j = 0; j < lights.size(); j++) {
                 lightStates.get(j).setAlertMode(PHLight.PHLightAlertMode.ALERT_NONE);
                 phHueSDK.getSelectedBridge().updateLightState(lights.get(j), lightStates.get(j));
