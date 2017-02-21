@@ -1,12 +1,12 @@
 package bartender.hue;
 
 
-import bartender.database.Connection;
 import com.philips.lighting.hue.sdk.*;
 import com.philips.lighting.model.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * Created by Jaspar Mang on 19.01.17.
@@ -14,7 +14,7 @@ import java.util.List;
 public class Bridge {
     private static final String LIVING_ROOM_KEY = "Wohnzimmer";
     private static Bridge instance = null;
-    private final PHHueSDK phHueSDK;
+    private PHHueSDK phHueSDK;
     private List<PHLight> lights;
     private List<PHLightState> lightStates;
 
@@ -35,8 +35,9 @@ public class Bridge {
     }
 
     private Bridge() {
-
-        phHueSDK = PHHueSDK.create();
+        bartender.utils.Properties properties = bartender.utils.Properties.getInstance();
+        if (properties.getOnRaspberryPi()){
+            phHueSDK = PHHueSDK.create();
         phHueSDK.setAppName("test");
 
 
@@ -49,7 +50,7 @@ public class Bridge {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
+    }
     }
 
     public void changeColor(int hue, int saturation) throws InterruptedException {
