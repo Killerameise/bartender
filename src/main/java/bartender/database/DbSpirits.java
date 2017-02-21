@@ -29,4 +29,14 @@ public class DbSpirits extends DbObject {
         return executeStatementReturnsString(sql, "pump");
     }
 
+    public int getHue(String name){
+        String sql = "SELECT hue FROM spirits WHERE name='" + name + "'";
+        return executeStatementReturnsInt(sql, "hue");
+    }
+
+    public int getSaturation(String name){
+        String sql = "SELECT saturation FROM spirits WHERE name='" + name + "'";
+        return executeStatementReturnsInt(sql, "saturation");
+    }
+
 }
