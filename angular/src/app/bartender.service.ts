@@ -5,7 +5,8 @@ import 'rxjs/Rx';
 @Injectable()
 export class BartenderService {
 
-  private baseUrl: string = 'http://192.168.5.119:8080/bartender/rest/interface/v1/'
+  //private baseUrl: string = 'http://192.168.5.119:8080/bartender/rest/interface/v1/'
+  private baseUrl: string = 'http://localhost:8080/bartender/rest/interface/v1/'
   private shotsUrl: string = this.baseUrl + 'shots/'
 
   constructor(private http: Http) { }

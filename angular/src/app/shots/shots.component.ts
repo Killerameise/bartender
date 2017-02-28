@@ -22,25 +22,28 @@ export class ShotsComponent implements OnInit {
   ngOnInit() {
     this.bartenderService.getShotsInfoList().subscribe(
       shotsInfoList => this.shotsInfoList = shotsInfoList,
-      error => this.errorMessage = <any> error
+      error => this.errorMessage = <any>error
     );
   }
 
   onShotSelected(event) {
     this.bartenderService.getShot(event).subscribe(
       selectedShot => this.selectedShot = selectedShot,
-      error => this.errorMessage = <any> error
+      error => this.errorMessage = <any>error
     );
   }
 
   onShotOrder(event) {
     this.bartenderService.makeShot(event.shot.link, event.quantity).subscribe(
       message => this.message = message,
-      error => this.errorMessage = error
+      error => this.errorMessage = error,
+      () => {
+        setTimeout(() => {
+          this.clearMessages();
+        }, 3000);
+
+      }
     )
-    setTimeout(() => {
-      this.clearMessages();
-    }, 5000);
   }
 
   clearMessages() {
