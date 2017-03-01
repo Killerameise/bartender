@@ -1,4 +1,4 @@
-export class ShotInfo {
+export class DrinkInfo {
   name: string;
   link: string;
 }

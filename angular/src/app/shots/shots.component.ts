@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Shot } from '../shot';
-import { ShotInfo } from '../shot-info';
+import { DrinkInfo } from '../drink-info';
 import { BartenderService } from '../bartender.service';
 import { Observable } from 'rxjs/Rx';
 
@@ -12,8 +12,8 @@ import { Observable } from 'rxjs/Rx';
 export class ShotsComponent implements OnInit {
   errorMessage: string;
   message: string;
-  shotsInfoList: ShotInfo[];
-  selectedShotLink: ShotInfo;
+  shotsInfoList: DrinkInfo[];
+  selectedShotLink: DrinkInfo;
   selectedShot: Shot;
   shotsList: Shot[];
 

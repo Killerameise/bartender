@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 
 import { AppComponent } from './app.component';
-import { ShotListComponent } from './shots/shot-list/shot-list.component';
+import { BaseListComponent } from './base-list/base-list.component';
 import { ShotsComponent } from './shots/shots.component';
 import { ShotDetailComponent } from './shots/shot-detail/shot-detail.component';
 
@@ -13,7 +13,7 @@ import { BartenderService } from './bartender.service';
 @NgModule({
   declarations: [
     AppComponent,
-    ShotListComponent,
+    BaseListComponent,
     ShotsComponent,
     ShotDetailComponent
   ],
