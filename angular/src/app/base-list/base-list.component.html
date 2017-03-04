@@ -1,10 +1,10 @@
-<h1>Shots.</h1>
+<h1>{{ title }}.</h1>
 <div *ngIf="drinksInfoList">
   <div class="list-group">
     <button *ngFor="let drinkInfo of drinksInfoList" type="button" [class.active]="selected == drinkInfo" class="list-group-item list-group-item-action" (click)="onDrinkSelected(drinkInfo)">{{drinkInfo.name}}
     </button>
   </div>
 </div>
-<div *ngIf="!shotsInfoList">
+<div *ngIf="!drinksInfoList">
   <h2>Seems like theres no shots here.</h2>
 </div>

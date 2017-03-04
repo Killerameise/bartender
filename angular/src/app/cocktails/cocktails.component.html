@@ -1,0 +1,11 @@
+<div *ngIf="message" id="cocktails-alert-success" class="alert alert-success">
+  {{ message.message }}
+</div>
+<div *ngIf="errorMessage" id="cocktails-alert-failure" class="alert alert-danger">
+  {{ errorMessage.message }}
+</div>
+<div class="row">
+  <app-base-list [drinksInfoList]="cocktailsInfoList" [title]="title" (selectedDrinkLink)="onCocktailSelected($event)" class="col"></app-base-list>
+  <app-cocktail-detail [cocktail]="selectedCocktail" (cocktailOrder)="onCocktailOrder($event)" class="col"></app-cocktail-detail>
+</div>
+

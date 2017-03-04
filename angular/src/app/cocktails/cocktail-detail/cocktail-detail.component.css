@@ -1,0 +1,19 @@
+h1 {
+  text-align: center;
+}
+
+.card {
+	text-align: center;
+}
+
+#cocktail-detail-img {
+  height: 200px;
+  width: 300px;
+  margin: 1rem auto auto auto;
+  background-color: grey;
+  border: 1px solid #ccc;
+}
+
+.btn {
+  margin-top: 0.5rem;
+}

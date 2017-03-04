@@ -1,0 +1,16 @@
+<h1>Details.</h1>
+<div *ngIf="cocktail" class="card">
+  <img id="cocktail-detail-img" src="{{cocktail.image}}" alt="cocktail-image">
+  <div class="card-block">
+    <h2 class="card-title">{{ cocktail.name }}.</h2>
+    <p class="card-text">{{ cocktail.description }}</p>
+    <ul class="list-group" *ngIf="cocktail.name != 'Random Cocktail'">
+      <li class="list-group-item active">Ingredients</li>
+      <li class="list-group-item" *ngFor="let ingredient of cocktail.ingredients">{{ ingredient.quantity }}cl {{ ingredient.spirit_name }} </li>
+    </ul>
+    <button type="button" class="btn btn-primary" (click)="orderCocktail()">Make</button>
+  </div>
+</div>
+<div *ngIf="!cocktail">
+  <h1>Choose a cocktail.</h1>
+</div>

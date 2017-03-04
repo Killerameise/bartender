@@ -8,6 +8,7 @@ export class BartenderService {
   //private baseUrl: string = 'http://192.168.5.119:8080/bartender/rest/interface/v1/'
   private baseUrl: string = 'http://localhost:8080/bartender/rest/interface/v1/'
   private shotsUrl: string = this.baseUrl + 'shots/'
+  private cocktailsUrl: string = this.baseUrl + 'cocktails/'
 
   constructor(private http: Http) { }
 
@@ -26,5 +27,19 @@ export class BartenderService {
     });
     let options = new RequestOptions({ headers: headers });
     return this.http.post(shotMakeUrl, body, options).map((res: Response) => res.json());
+  }
+
+  getCocktailsInfoList() {
+    return this.http.get(this.cocktailsUrl).map((res: Response) => res.json());
+  }
+
+  getCocktail(cocktailDetailUrl) {
+    return this.http.get(cocktailDetailUrl).map((res: Response) => res.json());
+  }
+
+  makeCocktail(cocktailMakeUrl) {
+    let headers = new Headers({ 'Content-Type': 'application/json' });
+    let options = new RequestOptions({ headers: headers });
+    return this.http.post(cocktailMakeUrl, options).map((res: Response) => res.json());
   }
 };

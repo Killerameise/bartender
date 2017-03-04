@@ -16,6 +16,7 @@ export class ShotsComponent implements OnInit {
   selectedShotLink: DrinkInfo;
   selectedShot: Shot;
   shotsList: Shot[];
+  title: string = 'Shots';
 
   constructor(public bartenderService: BartenderService) { }
 

@@ -9,6 +9,7 @@ import { DrinkInfo } from '../drink-info';
 export class BaseListComponent implements OnInit {
 
   @Input() drinksInfoList: DrinkInfo[];
+  @Input() title: string;
   @Output() selectedDrinkLink: EventEmitter<string> = new EventEmitter();
 
   constructor() { }

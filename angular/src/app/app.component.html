@@ -1,16 +1,16 @@
 <ul id="nav-navigation" class="nav nav-tabs">
   <li class="nav-item">
-    <a class="nav-link active" href="#">
+    <a class="nav-link active" routerLink="/shots" routerLinkActive="active">
       Shots
     </a>
   </li>
   <li class="nav-item">
-    <a class="nav-link disabled" href="#">
+    <a class="nav-link" routerLink="/cocktails" routerLinkActive="active">
       Cocktails
     </a>
   </li>
 </ul>
 
-<div id="app-main-container" class="container-fluid">
-  <app-shots></app-shots>
+<div class="container">
+  <router-outlet></router-outlet>
 </div>

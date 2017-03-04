@@ -5,6 +5,6 @@
   {{ errorMessage.message }}
 </div>
 <div class="row">
-  <app-base-list [drinksInfoList]="shotsInfoList" (selectedShotLink)="onShotSelected($event)" class="col"></app-base-list>
+  <app-base-list [drinksInfoList]="shotsInfoList" [title]="title" (selectedDrinkLink)="onShotSelected($event)" class="col"></app-base-list>
   <app-shot-detail [shot]="selectedShot" (shotOrder)="onShotOrder($event)" class="col"></app-shot-detail>
 </div>
